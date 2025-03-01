@@ -1,0 +1,17 @@
+[tool.black]
+line-length = 66  # Default line length (can be changed)
+target-version = ['py37', 'py38', 'py39', 'py310']  # Python versions to support
+include = '\.pyi?$'  # Regex for files to include (default is all Python files)
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
