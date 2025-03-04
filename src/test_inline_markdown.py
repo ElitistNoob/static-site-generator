@@ -1,7 +1,11 @@
 import unittest
 
 from textnode import TextType, TextNode
-from inline_markdown import split_nodes_delimiter
+from inline_markdown import (
+    split_nodes_delimiter,
+    extract_markdown_images,
+    extract_markdown_links,
+)
 
 
 class TestUtils(unittest.TestCase):
@@ -70,5 +74,48 @@ class TestUtils(unittest.TestCase):
                 TextNode(" and ", TextType.TEXT),
                 TextNode("italic", TextType.ITALIC),
                 TextNode(" block node", TextType.TEXT),
+            ],
+        )
+
+    def test_extract_images(self):
+        text = "This is a text with an image and an alt text ![Matrix](https://i.imgur.com/aKaOqIh.gif)"
+        self.assertListEqual(
+            extract_markdown_images(text),
+            [("Matrix", "https://i.imgur.com/aKaOqIh.gif")],
+        )
+
+    def test_extract_multiple_images(self):
+        text = "This is [image #1] - ![alt_text](https://i.imgur.com/aKaOqIh.gif), and this is [image #2] - ![alt_text_2](https://i.imgur.com/fJRm4Vk.jpeg)"
+        self.assertListEqual(
+            extract_markdown_images(text),
+            [
+                ("alt_text", "https://i.imgur.com/aKaOqIh.gif"),
+                (
+                    "alt_text_2",
+                    "https://i.imgur.com/fJRm4Vk.jpeg",
+                ),
+            ],
+        )
+
+    def test_extract_link(self):
+        text = "This is a text with a link and an anchor text [anchor_text](https://i.imgur.com/aKaOqIh.gif)"
+        self.assertListEqual(
+            extract_markdown_links(text),
+            [("anchor_text", "https://i.imgur.com/aKaOqIh.gif")],
+        )
+
+    def test_extract_multiple_links(self):
+        text = "This is [link #1] - [anchor_text](https://i.imgur.com/aKaOqIh.gif), and this is [link #2] - [anchor_text_2](https://i.imgur.com/fJRm4Vk.jpeg)"
+        self.assertListEqual(
+            extract_markdown_links(text),
+            [
+                (
+                    "anchor_text",
+                    "https://i.imgur.com/aKaOqIh.gif",
+                ),
+                (
+                    "anchor_text_2",
+                    "https://i.imgur.com/fJRm4Vk.jpeg",
+                ),
             ],
         )
