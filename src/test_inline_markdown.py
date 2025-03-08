@@ -5,6 +5,9 @@ from inline_markdown import (
     split_nodes_delimiter,
     extract_markdown_images,
     extract_markdown_links,
+    split_nodes_image,
+    split_nodes_link,
+    text_to_textnodes,
 )
 
 
@@ -118,4 +121,88 @@ class TestUtils(unittest.TestCase):
                     "https://i.imgur.com/fJRm4Vk.jpeg",
                 ),
             ],
+        )
+
+    def test_split_image_nodes(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is text with an ", TextType.TEXT),
+                TextNode(
+                    "image",
+                    TextType.IMAGE,
+                    "https://i.imgur.com/zjjcJKZ.png",
+                ),
+                TextNode(" and another ", TextType.TEXT),
+                TextNode(
+                    "second image",
+                    TextType.IMAGE,
+                    "https://i.imgur.com/3elNhQu.png",
+                ),
+            ],
+        )
+
+    def test_split_link_nodes_trailing_text(self):
+        node = TextNode(
+            "This is text with an [link](https://i.imgur.com/zjjcJKZ.png) and another [second link](https://i.imgur.com/3elNhQu.png) with trailing text",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is text with an ", TextType.TEXT),
+                TextNode(
+                    "link",
+                    TextType.LINK,
+                    "https://i.imgur.com/zjjcJKZ.png",
+                ),
+                TextNode(" and another ", TextType.TEXT),
+                TextNode(
+                    "second link",
+                    TextType.LINK,
+                    "https://i.imgur.com/3elNhQu.png",
+                ),
+                TextNode(" with trailing text", TextType.TEXT),
+            ],
+        )
+
+    def test_split_image(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an ", TextType.TEXT),
+                TextNode(
+                    "image",
+                    TextType.IMAGE,
+                    "https://i.imgur.com/zjjcJKZ.png",
+                ),
+            ],
+            new_nodes,
+        )
+
+    def test_split_image_single(self):
+        node = TextNode(
+            "![image](https://www.example.COM/IMAGE.PNG)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode(
+                    "image",
+                    TextType.IMAGE,
+                    "https://www.example.COM/IMAGE.PNG",
+                ),
+            ],
+            new_nodes,
         )
