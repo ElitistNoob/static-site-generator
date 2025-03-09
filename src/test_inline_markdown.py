@@ -11,7 +11,7 @@ from inline_markdown import (
 )
 
 
-class TestUtils(unittest.TestCase):
+class test_inline_markdown(unittest.TestCase):
     def test_split_nodes_delimiter_code(self):
         node = TextNode(
             "This is a `code block` node", TextType.TEXT
