@@ -1,5 +1,9 @@
 import unittest
-from block_markdown import markdown_to_blocks
+from block_markdown import (
+    BlockType,
+    block_to_block_types,
+    markdown_to_blocks,
+)
 
 
 class test_block_markdown(unittest.TestCase):
@@ -74,4 +78,42 @@ This is the same paragraph on a new line
                 "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
                 "- This is a list\n- with items",
             ],
+        )
+
+    def test_block_to_block_types_headings(self):
+        block = "### heading3"
+        self.assertEqual(
+            block_to_block_types(block), BlockType.HEADING
+        )
+
+    def test_block_to_block_types_code(self):
+        block = (
+            "```\nThis is a code block\n with multiple lines\n```"
+        )
+        self.assertEqual(
+            block_to_block_types(block), BlockType.CODE
+        )
+
+    def test_block_to_block_types_quote(self):
+        block = "> Quote1\n> Quote2\n> Quote3"
+        self.assertEqual(
+            block_to_block_types(block), BlockType.QUOTE
+        )
+
+    def test_block_to_block_types_unordered_list(self):
+        block = "- item1\n- item2\n- item3"
+        self.assertEqual(
+            block_to_block_types(block), BlockType.ULIST
+        )
+
+    def test_block_to_block_types_ordered_list(self):
+        block = "1. item1\n2. item2\n3. item3"
+        self.assertEqual(
+            block_to_block_types(block), BlockType.OLIST
+        )
+
+    def test_block_to_block_types_paragraph(self):
+        block = "This is a paragraph\n with multiple lines"
+        self.assertEqual(
+            block_to_block_types(block), BlockType.PARAGRAPH
         )
